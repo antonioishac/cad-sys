@@ -1,0 +1,3 @@
+-- admin
+INSERT INTO TB_USER_PERMISSAO (ID_USER, ID_permissao) values ('1A2B3C4D', 1);
+INSERT INTO TB_USER_PERMISSAO (ID_USER, ID_permissao) values ('1A2B3C4D', 2);

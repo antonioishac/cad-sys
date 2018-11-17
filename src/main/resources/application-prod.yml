@@ -1,0 +1,46 @@
+spring:
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+  datasource:
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://localhost:3306/cadsys?createDatabaseIfNotExist=true&useSSL=false
+    username: root
+    password: jesuscristo
+    hikari:
+      minimum-idle: 5
+      # NUMERO MAXIMO DO POOL DE CONEXAO
+      maximum-pool-size: 100
+      idle-timeout: 60000
+      pool-name: cadsysCP
+      # CONFIGURANDO PARA 60 SEG
+      connection-timeout: 120000
+      max-lifetime: 2000000
+      data-source-properties:
+        cache-prep-stmts: true
+        prep-stmp-cache-size: 250
+        prep-stmt-cache-sql-limit: 2048
+        use-server-prep-stmts: true
+
+  jackson:
+    date-format: yyyy-MM-dd
+    deserialization:
+      fail-on-unknown-properties: false
+  profiles:
+    active: oauth-security
+  messages:
+    basename: messages
+
+logging:
+  level:
+    ROOT: INFO
+    br.com.cadsys: DEBUG
+
+
+server:
+  port: 8081
+
+application:

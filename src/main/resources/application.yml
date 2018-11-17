@@ -1,0 +1,18 @@
+spring:
+  jackson:
+    date-format: yyyy-MM-dd
+    deserialization:
+      fail-on-unknown-properties: false
+  messages:
+    basename: messages
+
+logging:
+  level:
+    ROOT: INFO
+    br.com.cadsys: DEBUG
+
+
+server:
+  port: 8081
+
+application:
