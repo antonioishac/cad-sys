@@ -23,7 +23,10 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import br.com.cadsys.exception.UserException;
+import br.com.cadsys.exception.UserExistsException;
+import br.com.cadsys.exception.UserInvalidException;
+import br.com.cadsys.exception.UserInvalidSessionException;
+import br.com.cadsys.exception.UserUnAuthorizedException;
 
 @ControllerAdvice
 @Order(Ordered.HIGHEST_PRECEDENCE)
@@ -63,9 +66,19 @@ public class CadSysExceptionHandler extends ResponseEntityExceptionHandler {
 		return handleExceptionInternal(ex, erros, new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
-	@ExceptionHandler({ UserException.class })
-	public ResponseEntity<Object> handleUserException(UserException ex, WebRequest request) {
-		return handleExceptionInternal(ex, new Erro(ex.getMessage()), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR, request);
+	@ExceptionHandler({ UserUnAuthorizedException.class })
+	public ResponseEntity<Object> handleUserPasswordException(UserUnAuthorizedException ex, WebRequest request) {
+		return handleExceptionInternal(ex, new Erro(ex.getMessage()), new HttpHeaders(), HttpStatus.UNAUTHORIZED, request);
+	}
+	
+	@ExceptionHandler({ UserInvalidException.class })
+	public ResponseEntity<Object> handleUserInvalidException(UserInvalidException ex, WebRequest request) {
+		return handleExceptionInternal(ex, new Erro(ex.getMessage()), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
+	}
+	
+	@ExceptionHandler({ UserExistsException.class })
+	public ResponseEntity<Object> handleUserInvalidException(UserExistsException ex, WebRequest request) {
+		return handleExceptionInternal(ex, new Erro(ex.getMessage()), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
 	}
 	
 	private List<Erro> criarListaDeErros(BindingResult bindingResult) {

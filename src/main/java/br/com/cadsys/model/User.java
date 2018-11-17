@@ -1,6 +1,7 @@
 package br.com.cadsys.model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -39,7 +40,6 @@ public class User implements Serializable {
 	
 	@Id
 	@Column(name = "ID")
-	@JsonIgnore
 	private String id;
 	
 	@NotNull
@@ -55,6 +55,18 @@ public class User implements Serializable {
 	@NotEmpty
 	@Column(name = "PASSWORD")
 	private String password;
+	
+	@Column(name = "TOKEN", nullable = false)
+	private String token;
+	
+	@Column(name = "MODIFIED")
+	private LocalDateTime modified;
+	
+	@Column(name = "LAST_LOGIN")
+	private LocalDateTime lastLogin;
+	
+	@Column(name = "CREATED")
+	private LocalDateTime created;
 	
 	@JsonIgnoreProperties("user")
 	@OneToMany(mappedBy = "user", orphanRemoval = true, cascade = CascadeType.ALL)
@@ -123,6 +135,62 @@ public class User implements Serializable {
 	}
 
 	/**
+	 * @return the token
+	 */
+	public String getToken() {
+		return token;
+	}
+
+	/**
+	 * @param token the token to set
+	 */
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	/**
+	 * @return the modified
+	 */
+	public LocalDateTime getModified() {
+		return modified;
+	}
+
+	/**
+	 * @param modified the modified to set
+	 */
+	public void setModified(LocalDateTime modified) {
+		this.modified = modified;
+	}
+
+	/**
+	 * @return the lastLogin
+	 */
+	public LocalDateTime getLastLogin() {
+		return lastLogin;
+	}
+
+	/**
+	 * @param lastLogin the lastLogin to set
+	 */
+	public void setLastLogin(LocalDateTime lastLogin) {
+		this.lastLogin = lastLogin;
+	}
+
+	/**
+	 * @return the created
+	 */
+	public LocalDateTime getCreated() {
+		return created;
+	}
+
+	/**
+	 * @param created the created to set
+	 */
+	public void setCreated(LocalDateTime created) {
+		this.created = created;
+	}
+
+	/**
 	 * @return the phones
 	 */
 	public List<Phone> getPhones() {
@@ -135,7 +203,7 @@ public class User implements Serializable {
 	public void setPhones(List<Phone> phones) {
 		this.phones = phones;
 	}
-	
+
 	/**
 	 * @return the permissoes
 	 */
@@ -158,8 +226,6 @@ public class User implements Serializable {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
-		result = prime * result + ((phones == null) ? 0 : phones.hashCode());
 		return result;
 	}
 
@@ -180,16 +246,6 @@ public class User implements Serializable {
 				return false;
 		} else if (!id.equals(other.id))
 			return false;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
-			return false;
-		if (phones == null) {
-			if (other.phones != null)
-				return false;
-		} else if (!phones.equals(other.phones))
-			return false;
 		return true;
 	}
 
@@ -198,7 +254,8 @@ public class User implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", phones="
-				+ phones + ", permissoes=" + permissoes + "]";
+		return "User [id=" + id + ", name=" + name + ", email=" + email + ", password=" + password + ", token=" + token
+				+ ", modified=" + modified + ", lastLogin=" + lastLogin + ", created=" + created + ", phones=" + phones
+				+ ", permissoes=" + permissoes + "]";
 	}	
 }

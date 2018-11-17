@@ -2,6 +2,7 @@ package br.com.cadsys.resources;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
@@ -18,8 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import br.com.cadsys.event.RecursoCriadoEvent;
+import br.com.cadsys.exception.UserExistsException;
+import br.com.cadsys.exception.UserInvalidException;
+import br.com.cadsys.exception.UserUnAuthorizedException;
 import br.com.cadsys.model.User;
 import br.com.cadsys.service.UserService;
+import br.com.cadsys.service.dto.LoginDTO;
 
 @RestController
 @RequestMapping("/api/user")
@@ -32,25 +37,32 @@ public class UserResource {
 	private UserService userService;
 	
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response) {
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response) throws UserExistsException {
 		User userSave = userService.saveUser(user, user.getPassword());
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, userSave.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(userSave);
 	}
+	
+	@PostMapping(value = "/login", consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<User> loginUser(@Valid @RequestBody LoginDTO userLogin) throws UserUnAuthorizedException, UserInvalidException {
+		User user = userService.loginSystem(userLogin);
+		return user != null ? ResponseEntity.ok(user) : ResponseEntity.noContent().build();
+	}
 
-	@GetMapping("/codigo/{id}")
-	public ResponseEntity<User> searchUserById(@PathVariable String id) {
-		User user = userService.searchIdUser(id);
+	@GetMapping(value = "/codigo/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
+	public ResponseEntity<User> searchUserById(@PathVariable String id, HttpServletRequest request) throws UserUnAuthorizedException {
+		String token = request.getHeader("token");
+		User user = userService.searchIdUser(id, token);
 		return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
 	}
 	
-	@GetMapping("/name/{name}")
+	@GetMapping(value = "/name/{name}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<List<User>> searchUserByName(@PathVariable String name) {
 		List<User> users = userService.listUserWithName(name);
 		return users != null ? ResponseEntity.ok(users) : ResponseEntity.noContent().build();
 	}
 	
-	@GetMapping
+	@GetMapping(produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<List<User>> searchAllUsers() {
 		List<User> users = userService.listAllUsers();
 		return users != null ? ResponseEntity.ok(users) : ResponseEntity.noContent().build();
