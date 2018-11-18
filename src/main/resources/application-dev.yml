@@ -1,38 +1,48 @@
 spring:
   jpa:
-    database: mysql
+    database: h2
     show-sql: true
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+      ddl-auto: update
   datasource:
-    type: com.zaxxer.hikari.HikariDataSource
-    url: jdbc:mysql://localhost:3306/cadsys?createDatabaseIfNotExist=true&useSSL=false
-    username: root
-    password: jesuscristo
-    hikari:
-      minimum-idle: 5
-      # NUMERO MAXIMO DO POOL DE CONEXAO
-      maximum-pool-size: 100
-      idle-timeout: 60000
-      pool-name: cadsysCP
-      # CONFIGURANDO PARA 60 SEG
-      connection-timeout: 120000
-      max-lifetime: 2000000
-      data-source-properties:
-        cache-prep-stmts: true
-        prep-stmp-cache-size: 250
-        prep-stmt-cache-sql-limit: 2048
-        use-server-prep-stmts: true
+    url: jdbc:h2:mem:cadsys
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:     
+  
+  
+#    type: com.zaxxer.hikari.HikariDataSource
+#    url: jdbc:mysql://localhost:3306/cadsys?createDatabaseIfNotExist=true&useSSL=false
+#    username: root
+#    password: jesuscristo
+#    hikari:
+#      minimum-idle: 5
+#      # NUMERO MAXIMO DO POOL DE CONEXAO
+#      maximum-pool-size: 100
+#      idle-timeout: 60000
+#      pool-name: cadsysCP
+#      # CONFIGURANDO PARA 60 SEG
+#      connection-timeout: 120000
+#      max-lifetime: 2000000
+#      data-source-properties:
+#        cache-prep-stmts: true
+#        prep-stmp-cache-size: 250
+#        prep-stmt-cache-sql-limit: 2048
+#        use-server-prep-stmts: true
   application:
     name: cad-sys
+  h2:
+    console:
+      enabled: true
 
   jackson:
     date-format: yyyy-MM-dd
     deserialization:
       fail-on-unknown-properties: false
   profiles:
-    active: dev, oauth-security
+    active: dev
 
 logging:
   level:
@@ -44,3 +54,4 @@ server:
   port: 8081
 
 application:
+  origin-permitida: http://localhost:4200

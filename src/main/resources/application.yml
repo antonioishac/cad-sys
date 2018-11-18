@@ -5,6 +5,9 @@ spring:
       fail-on-unknown-properties: false
   messages:
     basename: messages
+  h2:
+    console:
+      enabled: true
 
 logging:
   level:

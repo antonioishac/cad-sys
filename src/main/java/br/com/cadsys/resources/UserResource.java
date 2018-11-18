@@ -37,8 +37,9 @@ public class UserResource {
 	private UserService userService;
 	
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response) throws UserExistsException {
-		User userSave = userService.saveUser(user, user.getPassword());
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response, HttpServletRequest request) throws UserExistsException, UserUnAuthorizedException {
+		String token = request.getHeader("Authorization");
+		User userSave = userService.saveUser(user, user.getPassword(), token);
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, userSave.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(userSave);
 	}
@@ -51,7 +52,7 @@ public class UserResource {
 
 	@GetMapping(value = "/codigo/{id}", produces = { MediaType.APPLICATION_JSON_VALUE })
 	public ResponseEntity<User> searchUserById(@PathVariable String id, HttpServletRequest request) throws UserUnAuthorizedException {
-		String token = request.getHeader("token");
+		String token = request.getHeader("Authorization");
 		User user = userService.searchIdUser(id, token);
 		return user != null ? ResponseEntity.ok(user) : ResponseEntity.notFound().build();
 	}

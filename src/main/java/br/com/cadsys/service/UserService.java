@@ -14,7 +14,7 @@ import br.com.cadsys.service.dto.LoginDTO;
  */
 public interface UserService {
 	
-	public User saveUser(User user, String password) throws UserExistsException;
+	public User saveUser(User user, String password, String tokenRequisicao) throws UserExistsException, UserUnAuthorizedException;
 	
 	public List<User> listUserWithName(String name);
 	

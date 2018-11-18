@@ -35,11 +35,13 @@ public class UserServiceImpl implements UserService {
 	private PermissaoRepository permissaoRepository;
 
 	@Override
-	public User saveUser(User user, String password) throws UserExistsException {
+	public User saveUser(User user, String password, String tokenRequisicao) throws UserExistsException, UserUnAuthorizedException {
 		
 		if (userRepository.findByEmail(user.getEmail()) != null) {
 			throw new UserExistsException("E-mail já existente");
 		}
+		
+		valityToken(tokenRequisicao);
 		
 		user.setId(UUID.randomUUID().toString().substring(0, 7));
 		user.getPhones().forEach(p -> p.setUser(user));
@@ -70,20 +72,14 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	@Override
 	public User searchIdUser(String id, String tokenHeader) throws UserUnAuthorizedException {		
-		User user = userRepository.findOne(id);
-		
+		User user = userRepository.findOne(id);		
 		if (user.getToken().equals(tokenHeader)) {
-			
-			//verificar validade
-			
-			//data e hora atual
 			LocalDateTime dateTime = LocalDateTime.now();
 			Duration diferencaDeTempo = Duration.between(user.getLastLogin(), dateTime);
 			
 			if (diferencaDeTempo.getSeconds() > TEMPO_VALIDADE) {
 				throw new UserUnAuthorizedException("Sessão inválida");
-			}
-			
+			}			
 			return user;
 		} else {
 			throw new UserUnAuthorizedException("Não Autorizado");
@@ -100,19 +96,31 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findByEmail(login.getEmail());
 		if (user != null) {
 			if (GeneratePassword.checkPass(login.getPassword(), user.getPassword())) {
-				
-				//atualiza o token e data de login
 				user.setToken(generateToken());
-				user.setLastLogin(LocalDateTime.now());
-				
-				user = userRepository.save(user);
-				
+				user.setLastLogin(LocalDateTime.now());				
+				user = userRepository.save(user);				
 				return user;
 			} else {
 				throw new UserUnAuthorizedException("Usuário e/ou senha inválidos");
 			}
 		} else {
 			throw new UserInvalidException("Usuário e/ou senha inválidos");
+		}
+	}
+	
+	private User valityToken(String tokenHeader) throws UserUnAuthorizedException {
+		User user = userRepository.findByToken(tokenHeader);		
+		if (user != null && user.getToken().equals(tokenHeader)) {
+			//verificar validade do token
+			LocalDateTime dateTime = LocalDateTime.now();
+			Duration diferencaDeTempo = Duration.between(user.getLastLogin(), dateTime);
+			
+			if (diferencaDeTempo.getSeconds() > TEMPO_VALIDADE) {
+				throw new UserUnAuthorizedException("Sessão inválida");
+			}			
+			return user;
+		} else {
+			throw new UserUnAuthorizedException("Não Autorizado");
 		}
 	}
 }
