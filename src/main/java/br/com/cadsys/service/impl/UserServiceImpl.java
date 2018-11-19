@@ -22,26 +22,38 @@ import br.com.cadsys.service.UserService;
 import br.com.cadsys.service.dto.LoginDTO;
 import br.com.cadsys.service.util.GeneratePassword;
 
+/**
+ * @author aishac
+ * 
+ * Classe de serviço de usuário
+ */
 @Service
 @Transactional
 public class UserServiceImpl implements UserService {
 	
+	/**
+	 * Constante parametrizada com o tempo de validade do token
+	 */
 	private static final int TEMPO_VALIDADE = 1800;
 	
+	/**
+	 * Injeção de dependência para o repositório de usuário
+	 */
 	@Autowired
 	private UserRepository userRepository;
 	
+	/**
+	 * Injeção de dependências para o repositório de permissão de usuário
+	 */
 	@Autowired
 	private PermissaoRepository permissaoRepository;
 
 	@Override
-	public User saveUser(User user, String password, String tokenRequisicao) throws UserExistsException, UserUnAuthorizedException {
+	public User saveUser(User user, String password) throws UserExistsException {
 		
 		if (userRepository.findByEmail(user.getEmail()) != null) {
 			throw new UserExistsException("E-mail já existente");
 		}
-		
-		valityToken(tokenRequisicao);
 		
 		user.setId(UUID.randomUUID().toString().substring(0, 7));
 		user.getPhones().forEach(p -> p.setUser(user));
@@ -72,18 +84,9 @@ public class UserServiceImpl implements UserService {
 	@Transactional(readOnly = true)
 	@Override
 	public User searchIdUser(String id, String tokenHeader) throws UserUnAuthorizedException {		
-		User user = userRepository.findOne(id);		
-		if (user.getToken().equals(tokenHeader)) {
-			LocalDateTime dateTime = LocalDateTime.now();
-			Duration diferencaDeTempo = Duration.between(user.getLastLogin(), dateTime);
-			
-			if (diferencaDeTempo.getSeconds() > TEMPO_VALIDADE) {
-				throw new UserUnAuthorizedException("Sessão inválida");
-			}			
-			return user;
-		} else {
-			throw new UserUnAuthorizedException("Não Autorizado");
-		}
+		User user = userRepository.findOne(id);
+		verificaToken(tokenHeader);
+		return user;
 	}
 
 	@Override
@@ -96,7 +99,6 @@ public class UserServiceImpl implements UserService {
 		User user = userRepository.findByEmail(login.getEmail());
 		if (user != null) {
 			if (GeneratePassword.checkPass(login.getPassword(), user.getPassword())) {
-				user.setToken(generateToken());
 				user.setLastLogin(LocalDateTime.now());				
 				user = userRepository.save(user);				
 				return user;
@@ -108,17 +110,29 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 	
-	private User valityToken(String tokenHeader) throws UserUnAuthorizedException {
-		User user = userRepository.findByToken(tokenHeader);		
-		if (user != null && user.getToken().equals(tokenHeader)) {
-			//verificar validade do token
-			LocalDateTime dateTime = LocalDateTime.now();
-			Duration diferencaDeTempo = Duration.between(user.getLastLogin(), dateTime);
-			
-			if (diferencaDeTempo.getSeconds() > TEMPO_VALIDADE) {
-				throw new UserUnAuthorizedException("Sessão inválida");
-			}			
-			return user;
+	/**
+	 * Método que realiza as seguintes operações, 
+	 * buscar o token do usuario e verificar se o usuario está com o tempo de validade e se possui o perfil de admin,
+	 * verifica se o token está no tempo de validade.
+	 * 
+	 * @param tokenHeader
+	 * @throws UserUnAuthorizedException
+	 */
+	private void verificaToken(String tokenHeader) throws UserUnAuthorizedException {		
+		User userToken = userRepository.findByToken(tokenHeader);		
+		if (userToken != null) {			
+			for(Permissao p : userToken.getPermissoes()) {
+				if (Constants.ROLE_ADMIN == p.getId()) {					
+					LocalDateTime dateTime = LocalDateTime.now();
+					Duration diferencaDeTempo = Duration.between(userToken.getLastLogin(), dateTime);					
+					if (diferencaDeTempo.getSeconds() > TEMPO_VALIDADE) {
+						throw new UserUnAuthorizedException("Sessão inválida");
+					}
+					return;
+				} else {
+					throw new UserUnAuthorizedException("Não Autorizado");
+				}
+			}
 		} else {
 			throw new UserUnAuthorizedException("Não Autorizado");
 		}

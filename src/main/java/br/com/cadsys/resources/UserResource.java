@@ -37,9 +37,8 @@ public class UserResource {
 	private UserService userService;
 	
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE }, produces = { MediaType.APPLICATION_JSON_VALUE })
-	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response, HttpServletRequest request) throws UserExistsException, UserUnAuthorizedException {
-		String token = request.getHeader("Authorization");
-		User userSave = userService.saveUser(user, user.getPassword(), token);
+	public ResponseEntity<User> createUser(@Valid @RequestBody User user, HttpServletResponse response) throws UserExistsException {
+		User userSave = userService.saveUser(user, user.getPassword());
 		publisher.publishEvent(new RecursoCriadoEvent(this, response, userSave.getId()));
 		return ResponseEntity.status(HttpStatus.CREATED).body(userSave);
 	}

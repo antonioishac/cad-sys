@@ -43,12 +43,12 @@ public class User implements Serializable {
 	private String id;
 	
 	@NotNull
-	@Size(min = 5, max = 100)
+	@Size(min = 2, max = 100)
 	@Column(name = "NAME", unique = true)
 	private String name;
 
 	@Email
-	@Size(min = 5, max = 50)
+	@Size(min = 2, max = 50)
 	@Column(name = "EMAIL")
 	private String email;
 	
