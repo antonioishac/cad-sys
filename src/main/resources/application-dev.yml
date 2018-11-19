@@ -55,3 +55,5 @@ server:
 
 application:
   origin-permitida: http://localhost:4200
+  
+  
