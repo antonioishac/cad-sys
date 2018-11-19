@@ -54,4 +54,4 @@ server:
   port: 8081
 
 application:
-  origin-permitida: https://cad-sys-web.herokuapp.com, https://cad-sys-api.herokuapp.com
+  origin-permitida: https://cad-sys-web.herokuapp.com, https://cad-sys-api.herokuapp.com, https://sys-cad-web.herokuapp.com
