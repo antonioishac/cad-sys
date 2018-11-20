@@ -113,7 +113,6 @@ public class UserServiceImpl implements UserService {
 	/**
 	 * Método que realiza as seguintes operações, 
 	 * buscar o token do usuario e verificar se o usuario está com o tempo de validade e se possui o perfil de admin,
-	 * verifica se o token está no tempo de validade.
 	 * 
 	 * @param tokenHeader
 	 * @throws UserUnAuthorizedException

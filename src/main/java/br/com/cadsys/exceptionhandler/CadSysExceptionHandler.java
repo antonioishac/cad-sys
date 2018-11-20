@@ -25,7 +25,6 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import br.com.cadsys.exception.UserExistsException;
 import br.com.cadsys.exception.UserInvalidException;
-import br.com.cadsys.exception.UserInvalidSessionException;
 import br.com.cadsys.exception.UserUnAuthorizedException;
 
 @ControllerAdvice

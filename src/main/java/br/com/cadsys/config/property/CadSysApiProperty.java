@@ -6,12 +6,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class CadSysApiProperty {
 
 	private String originPermitida = "http://localhost:4200";
-
-	private final Seguranca seguranca = new Seguranca();
-
-	public Seguranca getSeguranca() {
-		return seguranca;
-	}
+	
+	private String endpointTest = "http://localhost:8081";
 
 	public String getOriginPermitida() {
 		return originPermitida;
@@ -21,18 +17,19 @@ public class CadSysApiProperty {
 		this.originPermitida = originPermitida;
 	}
 
-	public static class Seguranca {
-
-		private boolean enableHttps;
-
-		public boolean isEnableHttps() {
-			return enableHttps;
-		}
-
-		public void setEnableHttps(boolean enableHttps) {
-			this.enableHttps = enableHttps;
-		}
-
+	/**
+	 * @return the endpointTest
+	 */
+	public String getEndpointTest() {
+		return endpointTest;
 	}
+
+	/**
+	 * @param endpointTest the endpointTest to set
+	 */
+	public void setEndpointTest(String endpointTest) {
+		this.endpointTest = endpointTest;
+	}
+
 
 }

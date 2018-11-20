@@ -55,5 +55,6 @@ server:
 
 application:
   origin-permitida: http://localhost:4200
+  endpoint-test: http://localhost:4200
   
   

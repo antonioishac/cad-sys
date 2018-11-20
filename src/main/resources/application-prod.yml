@@ -55,3 +55,4 @@ server:
 
 application:
   origin-permitida: https://cad-sys-web.herokuapp.com, https://cad-sys-api.herokuapp.com, https://sys-cad-web.herokuapp.com
+  endpoint-test: https://cad-sys-api.herokuapp.com
